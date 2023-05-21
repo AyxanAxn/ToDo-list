@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import Item from './Item/Item';
 
 function Items(props) {
@@ -12,7 +12,13 @@ function Items(props) {
         <div style={mystyle}>
             {
                 props.allTasks.map((item, index) => 
-                    <Item style={mystyle} key = {index} taskChecked={props.taskChecked} task ={item}/>)
+                    <Item
+                        style={mystyle} 
+                        key = {index} 
+                        taskChecked={props.taskChecked}
+                        removeTask = {props.removeTask}
+                        task ={item}
+                        updateDescription = {props.editList}/>)
             }
         </div>
    );
