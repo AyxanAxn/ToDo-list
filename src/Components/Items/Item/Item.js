@@ -4,22 +4,18 @@ import Modal from './Modal/Modal';
 import './Item.css';
 
 function Item(props) {
-  const [isChecked, setIsChecked] = useState(props.task.isChecked)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedDescription, setEditedDescription] = useState(props.task.description);
 
   function checkboxClicked()
   {
-    setIsChecked(prevValue => !prevValue);
-    props.taskChecked(props.task.id, !isChecked);
+    props.taskChecked(props.task.id, !props.task.isChecked);
   }
 
   function recycleClick()
   {
     props.removeTask(props.task.id);
-    console.log("recycle" + props.task.id)
   }
-
   function openModal() {
     setIsModalOpen(true);
   }
@@ -38,7 +34,7 @@ function Item(props) {
         <div className="card-body add-input-container ">
             <p className="card-text">{props.task.id + " " + props.task.description}</p>
           <button className='button'>
-            <input className="form-check-input" checked={isChecked} onChange={checkboxClicked} type="checkbox" value ={"isChecked"} id="flexCheckDefault"/>
+            <input className="form-check-input" checked={props.task.isChecked} onChange={checkboxClicked} type="checkbox" value ={props.task.isChecked} id="flexCheckDefault"/>
           </button>
 
           <button className="button" onClick={openModal}>
@@ -52,7 +48,6 @@ function Item(props) {
 
         {isModalOpen && 
         <Modal
-          isOpen={isModalOpen}
           closeModal={closeModal}
           onSave={saveDescription}
           editedDescription={editedDescription}

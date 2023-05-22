@@ -1,26 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
 import Items from './Components/Items/Items';
 import AddInput from './Components/AddInput/AddInput';
 import React, { useState } from 'react';
-import { Modal } from 'bootstrap';
 
 
 const startValues = [
   {
     id: 0,
     description: "Work",
-    isChecked: true
+    isChecked: false
   }
 ]
 function App() {
-
-  const [tasks, setTasks] = new useState(startValues);
+  const [tasks, setTasks] = useState(startValues);
+  const [idCounter, setIdCounter] = useState(1);
+  
+  // useEffect(() => {
+  //   console.log("Tasks: ", tasks);
+  // }, [tasks])
 
   function addTask(task)
   {
-    if(task.description != ""){ 
-      setTasks(oldArray => [...oldArray, {...task, id: oldArray.length}] );
+    if(task.description !== ""){ 
+      setIdCounter(prevCount=>prevCount+1)
+      setTasks(oldArray => [...oldArray, {...task, id: idCounter}] );
     }
   }
   
@@ -28,12 +31,30 @@ function App() {
     setTasks(prevTasks => prevTasks.filter(task => task.id !== index));
   }
 
+  function removeAllElements(){
+    setTasks([]);
+  }
+
+  function removeCheckedElements() {
+    setTasks(prevTasks => prevTasks.filter(task => !task.isChecked));
+  }
+
   function taskIsChecked(index, isChecked)
   {
-    setTasks((lastArray)=>{
-        lastArray[index].isChecked = isChecked
-        return lastArray
+    console.log("Is checked func : ")
+    const newTasks = tasks.map(item =>
+      {
+        if(item.id === index)
+        {
+          console.log("If statement")
+          return {...item, isChecked: isChecked}
+        }
+       else if(item.id !== index) {
+          console.log("else statement")
+          return item;
+        }
       })
+    setTasks(newTasks)
   }
 
   function editList(index, description){
@@ -43,15 +64,17 @@ function App() {
           return { ...task, description: description };
         }
         return task;
-      });
-    });
+      })
+    })
   }
-  
   return (
     <div className="App">
       <AddInput taskAdded = {addTask} />
       <Items allTasks = {tasks} taskChecked={taskIsChecked} removeTask = {removeElement} editList = {editList}/>
+      <button className = "button" onClick={removeAllElements}>Remove all tasks</button>
+      <button className = "button" onClick={removeCheckedElements}>Remove checked tasks</button>
     </div>
-  );
+  )
 }
+
 export default App;

@@ -8,7 +8,8 @@ function Items(props) {
         fontFamily: "Arial",
         marginBottom: "100px"
       };
-    return (
+      //console.log(props.allTasks);
+      return (
         <div style={mystyle}>
             {
                 props.allTasks.map((item, index) => 
