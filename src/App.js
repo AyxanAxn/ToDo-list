@@ -1,80 +1,144 @@
-import './App.css';
-import Items from './Components/Items/Items';
-import AddInput from './Components/AddInput/AddInput';
-import React, { useState } from 'react';
-
+import "./App.css";
+import AddInput from "./Components/AddInput/AddInput";
+import React, { useState } from "react";
+import Item from "./Components/Items/Item/Item";
 
 const startValues = [
   {
-    id: 0,
+    isChecked: true,
     description: "Work",
-    isChecked: false
-  }
-]
-function App() {
-  const [tasks, setTasks] = useState(startValues);
-  const [idCounter, setIdCounter] = useState(1);
-  
-  // useEffect(() => {
-  //   console.log("Tasks: ", tasks);
-  // }, [tasks])
+    id: 0,
+  },
+];
 
-  function addTask(task)
-  {
-    if(task.description !== ""){ 
-      setIdCounter(prevCount=>prevCount+1)
-      setTasks(oldArray => [...oldArray, {...task, id: idCounter}] );
+const allFilters = {
+  showAll: 0,
+  showDone: 1,
+  showNotDone: 2,
+};
+
+function App() {
+  const [tasks, setTasks] = new useState(startValues);
+  const [filter, setFilter] = new useState(allFilters.showAll);
+  function removeTask(index) {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== index));
+  }
+
+  function updateTaskDescription(index, newDescription) {
+    const newTasks = tasks.map((item) => {
+      if (item.id === index) {
+        return { ...item, description: newDescription };
+      }
+    });
+    setTasks(newTasks);
+  }
+
+  function addTask(task) {
+    if (task.description != "") {
+      setTasks((oldArray) => [
+        ...oldArray,
+        { ...task, id: oldArray[oldArray.length - 1].id + 1 },
+      ]);
     }
   }
-  
-  function removeElement(index){
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== index));
+
+  function taskIsChecked(index, isChecked) {
+    const newTasks = tasks.map((item) => {
+      if (item.id === index) {
+        return { ...item, isChecked: isChecked };
+      } else if (item.id !== index) {
+        return item;
+      }
+    });
+    setTasks(newTasks);
   }
 
-  function removeAllElements(){
+  function removeAllTasks() {
     setTasks([]);
   }
-
-  function removeCheckedElements() {
-    setTasks(prevTasks => prevTasks.filter(task => !task.isChecked));
+  function removeCheckedTasks() {
+    setTasks((prevTasks) => prevTasks.filter((task) => !task.isChecked));
   }
 
-  function taskIsChecked(index, isChecked)
-  {
-    console.log("Is checked func : ")
-    const newTasks = tasks.map(item =>
-      {
-        if(item.id === index)
-        {
-          console.log("If statement")
-          return {...item, isChecked: isChecked}
-        }
-       else if(item.id !== index) {
-          console.log("else statement")
-          return item;
-        }
-      })
-    setTasks(newTasks)
+  function filterAllTasks() {
+    setFilter(allFilters.showAll);
   }
 
-  function editList(index, description){
-    setTasks(prevTasks => {
-      return prevTasks.map(task => {
-        if (task.id === index) {
-          return { ...task, description: description };
-        }
-        return task;
-      })
-    })
+  function filterDoneTasks() {
+    setFilter(allFilters.showDone);
   }
+
+  function filterNotDoneTasks() {
+    setFilter(allFilters.showNotDone);
+  }
+
+  let jsxToRender;
+  switch (filter) {
+    case allFilters.showAll:
+      jsxToRender = tasks.map((item, index) => (
+        <Item
+          key={index}
+          taskRemoved={removeTask}
+          taskDescriptionUpdated={updateTaskDescription}
+          taskChecked={taskIsChecked}
+          task={item}
+        />
+      ));
+      break;
+    case allFilters.showDone:
+      jsxToRender = tasks.map(
+        (item, index) =>
+          item.isChecked && (
+            <Item
+              key={index}
+              taskRemoved={removeTask}
+              taskDescriptionUpdated={updateTaskDescription}
+              taskChecked={taskIsChecked}
+              task={item}
+            />
+          )
+      );
+      break;
+    case allFilters.showNotDone:
+      jsxToRender = tasks.map(
+        (item, index) =>
+          !item.isChecked && (
+            <Item
+              key={index}
+              taskRemoved={removeTask}
+              taskDescriptionUpdated={updateTaskDescription}
+              taskChecked={taskIsChecked}
+              task={item}
+            />
+          )
+      );
+      break;
+  }
+
   return (
     <div className="App">
-      <AddInput taskAdded = {addTask} />
-      <Items allTasks = {tasks} taskChecked={taskIsChecked} removeTask = {removeElement} editList = {editList}/>
-      <button className = "button" onClick={removeAllElements}>Remove all tasks</button>
-      <button className = "button" onClick={removeCheckedElements}>Remove checked tasks</button>
-    </div>
-  )
-}
+      <AddInput taskAdded={addTask} />
+      <div>
+        <button onClick={filterAllTasks} className="button">
+          All
+        </button>
+        <button onClick={filterDoneTasks} className="button">
+          Done
+        </button>
+        <button onClick={filterNotDoneTasks} className="button">
+          Todo
+        </button>
+      </div>
 
+      <div className="all-items">{jsxToRender}</div>
+
+      <button onClick={removeAllTasks} className="button">
+        Delete all tasks
+      </button>
+      <button onClick={removeCheckedTasks} className="button">
+        Delete done tasks
+      </button>
+    </div>
+  );
+}
 export default App;

@@ -1,5 +1,5 @@
 import React from 'react';
-function Modal({ isOpen, closeModal, onSave, editedDescription, setEditedDescription }) {
+function Modal({ closeModal, onSave, editedDescription, setEditedDescription }) {
     return (
     <div>
         <div className="modal-dialog">
